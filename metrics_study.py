@@ -32,7 +32,7 @@ print(f"train {tuple(Xtr.shape)}, test {tuple(Xte.shape)}")
 # ---------------------------------------------------------------- train all models
 print("\n--- Training models ---")
 
-epochs = 200
+epochs = 50  # Reduced for faster execution
 lr = 2e-3
 batch_size = 64
 seed = 0
@@ -40,7 +40,7 @@ n_samples = 359  # number of prior samples to score
 
 # Train feature network (shared for all evaluations)
 print("Training feature network...")
-net = S.train_feature_net(Xtr, ytr, epochs=60, seed=0)
+net = S.train_feature_net(Xtr, ytr, epochs=40, seed=0)
 fte = S.get_features(net, Xte)
 
 # Train autoencoder
@@ -87,6 +87,10 @@ for beta in betas:
         S.save_grid(vae_samp[:32], f"figures/metrics_vae_beta{beta}_samples.png", ncols=16,
                     title=f"VAE samples (beta={beta}) from N(0,I), decoded")
 
+# Also generate combined comparison
+S.save_grid(all_vae[:64], "figures/metrics_all_vae_samples.png", ncols=16,
+            title="VAE samples at different beta values (beta=0.1,0.5,1,2,4 from top)")
+
 # ---------------------------------------------------------------- compute metrics
 print("\n--- Computing metrics ---")
 
@@ -113,26 +117,6 @@ for beta in betas:
         results[f'VAE (beta={beta})'] = vae_b_metrics
         print(f"VAE b={beta}: Frechet={vae_b_metrics['frechet']:.1f}, Precision={vae_b_metrics['precision']:.3f}, "
               f"Recall={vae_b_metrics['recall']:.3f}, NearestTrain={vae_b_metrics['nearest_train']:.2f}")
-
-# ---------------------------------------------------------------- create comparison figure
-print("\n--- Creating comparison figure ---")
-
-# Create a figure comparing samples from all models
-fig_rows = []
-fig_rows.append(ae_samples[:32])  # AE samples
-
-for beta in betas:
-    if beta == 1.0:
-        fig_rows.append(vae_samples[:32])
-    else:
-        fig_rows.append(vae_models[beta].decode(
-            torch.randn(32, 8, generator=g)
-        ).clamp(0, 1)[:32])
-
-all_samples = torch.cat(fig_rows)
-S.save_grid(all_samples, "figures/metrics_all_models.png", ncols=16,
-            title="Sample comparison: AE, VAE(beta=1), and VAE with different KL weights")
-print("Saved figures/metrics_all_models.png")
 
 # ---------------------------------------------------------------- create metrics comparison table
 print("\n" + "=" * 70)

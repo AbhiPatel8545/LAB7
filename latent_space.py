@@ -136,7 +136,9 @@ from vae import active_units
 
 au_2d = active_units(viz_vae, Xtr)
 au_8d = active_units(vae, Xtr)
-cvau_8d = active_units(cvae, Xtr, threshold=0.01)
+
+# For conditional VAE, we need to pass labels
+cvau_8d = active_units(cvae, Xtr, c=S.one_hot(ytr), threshold=0.01)
 
 print(f"2D VAE active units: {au_2d}")
 print(f"8D VAE active units: {au_8d}")
