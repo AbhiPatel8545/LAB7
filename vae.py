@@ -78,10 +78,12 @@ def vae_loss(model, xb, yb=None, beta=1.0):
 
 
 @torch.no_grad()
-def active_units(model, X, threshold=0.01):
+def active_units(model, X, c=None, threshold=0.01):
     """Number of latent dimensions whose posterior mean varies across the data by more
-    than the threshold (variance across the training images)."""
-    mu, _ = model.encode(X)
+    than the threshold (variance across the training images).
+
+    For conditional VAE, pass c as one-hot labels."""
+    mu, _ = model.encode(X, c)
     return int((mu.var(0) > threshold).sum().item())
 
 
