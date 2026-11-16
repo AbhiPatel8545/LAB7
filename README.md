@@ -102,17 +102,25 @@ Key observations:
 
 | Model | Frechet | Precision | Recall | Nearest-Train |
 |-------|---------|-----------|--------|---------------|
-| AE    | 82.3    | 0.42      | 0.75   | 2.01          |
-| VAE (beta=1) | 45.2 | 0.61      | 0.66   | 1.85          |
-| VAE (beta=0.5) | 44.8 | 0.63      | 0.64   | 1.82          |
-| VAE (beta=2) | 62.1  | 0.52      | 0.58   | 1.65          |
-| VAE (beta=4) | 89.5  | 0.25      | 0.35   | 0.95          |
+| AE | 62.8 | 0.487 | 0.652 | 2.16 |
+| VAE (beta=1) | 31.0 | 0.532 | 0.485 | 1.58 |
+| VAE (beta=0.1) | 16.6 | 0.426 | 0.850 | 1.89 |
+| VAE (beta=0.5) | 17.9 | 0.496 | 0.758 | 1.71 |
+| VAE (beta=2.0) | 71.5 | 0.354 | 0.086 | 1.62 |
+| VAE (beta=4.0) | 300.6 | 0.000 | 0.000 | 2.06 |
 
 Metrics interpretation:
 - **Frechet distance**: Lower is better (measures distribution quality)
 - **Precision**: Higher is better (generated samples close to real data manifold)
 - **Recall**: Higher is better (generator covers real data distribution)
 - **Nearest-train**: Lower indicates memorization; VAE typically higher (generates new samples)
+
+Key observations:
+- VAE with low beta (0.1-0.5) achieves best Frechet distance and recall, showing better coverage of data manifold
+- VAE(beta=1) shows balanced metrics with good precision
+- As beta increases, precision drops significantly (posterior collapse)
+- At beta=2.0 and 4.0, recall drops to near zero (model ignores latent code)
+- AE has moderate recall but higher Frechet distance than VAE
 
 ## Conclusion
 
